@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("activity-search");
   const searchButton = document.getElementById("search-button");
   const categoryFilters = document.querySelectorAll(".category-filter");
+  const difficultyFilters = document.querySelectorAll(".difficulty-filter");
   const dayFilters = document.querySelectorAll(".day-filter");
   const timeFilters = document.querySelectorAll(".time-filter");
 
@@ -37,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // State for activities and filters
   let allActivities = {};
   let currentFilter = "all";
+  let currentDifficulty = "All";
   let searchQuery = "";
   let currentDay = "";
   let currentTimeRange = "";
@@ -363,7 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return "academic";
   }
 
-  // Function to fetch activities from API with optional day and time filters
+  // Function to fetch activities from API with optional filters
   async function fetchActivities() {
     // Show loading skeletons first
     showLoadingSkeletons();
@@ -390,6 +392,12 @@ document.addEventListener("DOMContentLoaded", () => {
           queryParams.push(`start_time=${encodeURIComponent(range.start)}`);
           queryParams.push(`end_time=${encodeURIComponent(range.end)}`);
         }
+      }
+
+      if (currentDifficulty) {
+        queryParams.push(
+          `difficulty=${encodeURIComponent(currentDifficulty)}`
+        );
       }
 
       const queryString =
@@ -612,6 +620,17 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update current filter and display filtered activities
       currentFilter = button.dataset.category;
       displayFilteredActivities();
+    });
+  });
+
+  // Add event listeners to difficulty filter buttons
+  difficultyFilters.forEach((button) => {
+    button.addEventListener("click", () => {
+      difficultyFilters.forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
+
+      currentDifficulty = button.dataset.difficulty;
+      fetchActivities();
     });
   });
 
